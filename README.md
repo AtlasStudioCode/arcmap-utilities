@@ -1,6 +1,6 @@
 # ArcMap Utilities
 
-A collection of utility functions and scripting tools for ArcMap for use in archaeological consulting data management and spatial analysis. Developed over the course of my career in the archaeological consulting industry.
+A collection of utility functions and scripting tools for [ArcMap](https://desktop.arcgis.com/en/arcmap/) for use in archaeological consulting data management and spatial analysis. Developed over the course of my career in the archaeological consulting industry.
 
 ## classes/
 
