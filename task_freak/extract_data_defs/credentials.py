@@ -4,7 +4,6 @@ from selenium.webdriver.support.ui import Select
 
 def set_cred(proj_num, page, driver):
     # set individual credentials for a given project name
-
     driver.get(page)
         
     elems = driver.find_elements(By.LINK_TEXT, proj_num)
