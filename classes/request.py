@@ -6,7 +6,9 @@ from arcpy import AddFieldDelimiters as afd
 from mxd import Mxd
 
 class Request(Mxd):
+    # class to present a data request map document for a given project geodatabase and extract geodatabase
     def __init__(self, project, extract):
+        # initialize the request class properties
         Mxd.__init__(self)
 
         self.work_point = self.set_layer("Project Location")
@@ -31,12 +33,15 @@ class Request(Mxd):
         self.update_map(project, extract)
 
     def set_datasource(self, lyr, db, fc):
+        # utility function to change the datasource of a layer in the map document
         lyr.replaceDataSource(db, "FILEGDB_WORKSPACE", fc, False)
 
     def remove_layer(self, lyr):
+        # utility function to remove a layer from the map document
         arcpy.mapping.RemoveLayer(self.df, lyr)
 
     def update_map(self, project, extract):
+        # utility function to update all layers to a new datasource in the map document
         for lyr in self.work_lyrs:
             if project.work_loc:
                 work_name = os.path.basename(project.work_loc)

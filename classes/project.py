@@ -3,7 +3,9 @@ import arcpy, os, shutil
 from arcpy import AddMessage as msg
 
 class Project:
+    # class to represent and create a project geodatabase for a given work location and search area
     def __init__(self, work_loc = None, linear_unit = None, search_area = None):
+        # initialize the project class properties
         msg("Creating project geodatabase...")
         self.resource_fcs = self.set_record_fcs("Resource")
         self.report_fcs = self.set_record_fcs("Report")
@@ -13,6 +15,7 @@ class Project:
         self.search_area = self.set_search_area(search_area)
 
     def set_record_fcs(self, ds_name):
+        # create layer objects for each feature class in a given dataset
         default_sde = "default_sde"
         return [os.path.join(default_sde,
                              "pgelibrary.geo." + ds_name,
@@ -20,6 +23,7 @@ class Project:
                 for fc_name in ["Point", "Line", "Area"]]
 
     def set_gdb(self, work_loc, search_area):
+        # create a project geodatabase from a template in the project folder
         if work_loc:
             gis = work_loc
         elif search_area:
@@ -38,6 +42,7 @@ class Project:
         return gdb
 
     def set_work_loc(self, work_loc):
+        # append the work location features to the associated geodatabase feature class
         if work_loc:
             shape_type = arcpy.Describe(work_loc).shapeType
             suffix = {"Point": "point",
@@ -51,6 +56,7 @@ class Project:
             return None
     
     def set_search_area(self, search_area):
+        # create a search area buffer or append a given search area to the associated geodatabase feature class
         if search_area:
             path = os.path.join(self.gdb, "search_area")
             arcpy.CopyFeatures_management(search_area, path)
@@ -60,4 +66,3 @@ class Project:
             arcpy.Buffer_analysis(self.work_loc, path, self.linear_unit,
                                   "FULL", "ROUND", "ALL", "", "PLANAR")
             return path
-        

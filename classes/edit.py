@@ -3,12 +3,15 @@ import pandas as pd
 
 from mxd import Mxd
 
-class Edit(Mxd): 
+class Edit(Mxd):
+    # class to represent an edit session of a given map document class object
     def __init__(self):
+        # initialize the edit class properties
         Mxd.__init__(self)
         self.raster_group = self.set_layer("Rasters")
         
     def append(self, gis, num):
+        # append shapefiles to geodatabase feature classes and add georeferenced images to map if present
         if not pd.isnull(gis):
             
             if gis.endswith(".tiff") or gis.endswith(".jpg"):

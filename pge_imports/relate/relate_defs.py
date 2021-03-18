@@ -3,25 +3,30 @@ import arcpy
 from arcpy import AddFieldDelimiters as afd
 from arcpy import AddMessage as msg
 
+# get current map document
 mxd = arcpy.mapping.MapDocument('CURRENT')
 
+# get four tables in current map document
 batch_tbl = arcpy.mapping.ListTableViews(mxd, 'pgelibrary.geo.batch')[0]
 batch_resource_tbl = arcpy.mapping.ListTableViews(mxd, 'pgelibrary.geo.batchresource')[0]
 resource_tbl = arcpy.mapping.ListTableViews(mxd, 'pgelibrary.geo.resources')[0]
 relate_tbl = arcpy.mapping.ListTableViews(mxd, 'pgelibrary.geo.resourcereportevents')[0]
 
 class primary:
+    # class to represent a primary number resource
     def __init__(self, county, _id):
         self.county = county
         self.id = _id
 
 class trinomial:
+    # class to represent a trinomial number resource
     def __init__(self, county, _id):
         self.name = county
         self.county = self.decode(county)
         self.id = _id
 
     def decode(self, county):
+        # change an int county code to a three letter string
         decode_lst = [''   , 'ALA', 'ALP', 'AMA', 'BUT',
                       'CAL', 'COL', 'CCO', 'DNO', 'ELD',
                       'FRE', 'GLE', 'HUM', 'IMP', 'INY',
@@ -37,6 +42,7 @@ class trinomial:
         return decode_lst.index(county)
 
 class forest:
+    # class to represent a forest service number resource
     def __init__(self, f1, f2, f3, f4):
         self.f1 = f1
         self.f2 = f2
@@ -44,10 +50,12 @@ class forest:
         self.f4 = f4
 
 class other:
+    # class to represent an other number resource
     def __init__(self, name):
         self.name = name
 
 def get_name(code_type, v1, v2, v3, v4, name):
+    # utility function to format a given resource code type
     name_dict = {'primary': """P-{}-{}""".format(v1, v2),
                  'trinomial': """CA-{}-{}""".format(name, v2),
                  'forest': """FS {}-{}-{}-{}""".format(v1, v2, v3, v4),
@@ -55,6 +63,7 @@ def get_name(code_type, v1, v2, v3, v4, name):
     return name_dict[code_type]
 
 def get_expr(code_type, f1, v1, f2, v2, f3, v3, f4, v4):
+    # get the sql query to select a resource given the input codes
     f1 = afd(resource_tbl.dataSource, f1)
     if f2:
         f2 = afd(resource_tbl.dataSource, f2)
@@ -69,6 +78,7 @@ def get_expr(code_type, f1, v1, f2, v2, f3, v3, f4, v4):
     return expr_dict[code_type]
 
 def append_relation(report_id, code_type, f1, v1, f2 = None, v2 = None, f3 = None, v3 = None, f4 = None, v4 = None, name = None):
+    # add an entry into the relationship table for the input report and resource
     resource_name = get_name(code_type, v1, v2, v3, v4, name)
     expr = get_expr(code_type, f1, v1, f2, v2, f3, v3, f4, v4)
 
@@ -97,6 +107,7 @@ def append_relation(report_id, code_type, f1, v1, f2 = None, v2 = None, f3 = Non
         msg('\t{} has zero matching resources.'.format(resource_name))
 
 def get_batch_id(batch_name):
+    # utility function to get the batch id for a given batch name
     expr = """{} = '{}'""".format(afd(batch_tbl.dataSource, 'batchname'), batch_name)
     with arcpy.da.SearchCursor(batch_tbl.dataSource, 'globalid', expr) as cursor:
         batch_ids = [row[0] for row in cursor]
@@ -108,6 +119,7 @@ def get_batch_id(batch_name):
             raise Exception("Batch name resulted in unknown error.")
 
 def append_to_batch(batch_name, code_type, f1, v1, f2 = None, v2 = None, f3 = None, v3 = None, f4 = None, v4 = None, name = None):
+    # add an entry into the batch resource table for the input resource
     batch_id = get_batch_id(batch_name)
     resource_name = get_name(code_type, v1, v2, v3, v4, name)
     expr = get_expr(code_type, f1, v1, f2, v2, f3, v3, f4, v4)

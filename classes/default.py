@@ -1,7 +1,9 @@
 import arcpy, os
 
 class Default:
+    # class to represent a connection to the default instance of an enterprise geodatabase
     def __init__(self):
+        # initalize the default class properties
         self.sde = 'sde_path'
         
         self.resource_ds = os.path.join(self.sde, "pgelibrary.geo.Resource")
@@ -25,6 +27,7 @@ class Default:
                             self.report_area]
     
     def set_layer(self, name, record_type):
+        # utility function to create a layer object for a given feature class
         ds = {"resource": self.resource_ds,
               "report": self.report_ds}[record_type]
         return os.path.join(ds, "pgelibrary.geo." + name)

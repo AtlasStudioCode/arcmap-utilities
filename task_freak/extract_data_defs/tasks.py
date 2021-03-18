@@ -7,34 +7,34 @@ from datetime import *
 import pandas as pd
 
 def new_task(page, driver):
-    #
+    # enter the new task dialouge box
     driver.get(page)
     
     driver.find_element(By.XPATH, "//input[@value='new task']").click()
 
 def set_name(name, driver):
-    #
+    # set the task name
     driver.find_element(By.NAME, 'task_name').send_keys(name)
 
 def set_date(driver):
-    #    
+    # set the task date
     driver.find_element(By.LINK_TEXT, 'Dates').click()
 
     driver.find_element(By.XPATH, "//input[@value='Finish Date']").click()
 
 def save_task(driver):
-    #
+    # save the task
     driver.find_element(By.NAME, 'btnFuseAction2').click()
 
 def make_task(name, page, driver):
-    #
+    # complete workflow to create a task with given name
     new_task(page, driver)
     set_name(name, driver)
     set_date(driver)
     save_task(driver)
 
 def check_exist(lst, driver):
-    #
+    # check if a task exists
     page = 'task_page'
     driver.get(page)
     
@@ -50,7 +50,7 @@ def check_exist(lst, driver):
             
 
 def make_tasks(import_csv, page, driver):
-    #
+    # run the create task function for each project name in the input csv
     df = pd.read_csv(import_csv)
     projs = df.project_name.tolist()
 
@@ -72,4 +72,3 @@ def make_tasks(import_csv, page, driver):
         print(' {}'.format(proj))
 
     driver.quit()
-    

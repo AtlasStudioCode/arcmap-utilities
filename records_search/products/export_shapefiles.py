@@ -1,9 +1,8 @@
 import arcpy, os
 
 def ExportShapefiles(gdb, out_dir):
-
+    # export shapefiles for all feature classes in the input geodatabase
     try:
-
         out_shp_fld = os.path.join(out_dir, 'shapefiles')
         
         if os.path.exists(out_shp_fld):

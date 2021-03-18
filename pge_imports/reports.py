@@ -5,31 +5,32 @@ from datetime import datetime, timedelta
 from arcpy import AddFieldDelimiters as afd
 from arcpy import AddMessage as msg
 
+# import all classes
 import sys
 sys.path.append("U:/scripts/")
 from classes import *
 
+# define global variables
 crcr_xlsx = "crcr.xlsx"
-
 edit_gdb = "gis_temp.gdb"
 edit_point = os.path.join("Report", "ReportPoint")
 edit_line = os.path.join("Report", "ReportLine")
 edit_area = os.path.join("Report", "ReportArea")
 
+# create a batch object from the given batch name
 batch_name = arcpy.GetParameterAsText(0)
 batch = Batch(batch_name)
 
 # create dataframe
-
 df = pd.read_excel(crcr_xlsx, 0)
 
+# add columns for label, report title, prepared by, and temporary title
 df["label"] = df.apply(lambda row: row["last_name"] + " " + str(row["year"]), axis = 1)
 df["reporttitle"] = df.apply(lambda row: row["report_name"] + " " + str(row["report_num"]), axis = 1)
 df["prepared_for"] = "PG&E"
 df["temptitle"] = df.apply(lambda row: os.path.basename(os.path.dirname(row["origpath"])), axis = 1)
 
 # add reports
-
 msg("Adding reports to table...")
 
 fields = ["label", "reporttitle", "temptitle",
@@ -51,7 +52,6 @@ edit.stopOperation()
 edit.stopEditing(True)
 
 # get report_ids for new report rows
-
 msg("Adding reports to batch...")
 
 now = datetime.now()
@@ -67,11 +67,9 @@ with arcpy.da.SearchCursor(batch.reports.dataSource, ["reportid"], query) as cur
 df["reportid"] = rep_ids
 
 # add reports to batch
-
 batch.add_record("report", df["reportid"].tolist())
 
 # apply attributes and add gis
-
 msg("Adding GIS to layers...")
 
 def set_feattype(comment, fc):
@@ -127,7 +125,6 @@ arcpy.Append_management(edit_line, batch.report_line, "NO_TEST")
 arcpy.Append_management(edit_area, batch.report_area, "NO_TEST")
 
 # add relates
-
 msg("Adding relates to reports...")
 
 rel_dict = dict(zip(df["uid"], df["reportid"]))

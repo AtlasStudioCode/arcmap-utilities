@@ -59,13 +59,13 @@ def init_project_fld(project, title):
     return title
 
 def empty_downloads():
-    #
+    # empty the downloads folder
     for name in os.listdir(download_fld):
         home = os.path.join(download_fld, name)
         os.remove(home)
 
 def mark_done(row_id, driver):
-    #
+    # mark the row as downloaded in TaskFreak
     driver.find_element(By.ID, 'est1{0}'.format(row_id)).click()
     driver.switch_to_alert().dismiss()
 

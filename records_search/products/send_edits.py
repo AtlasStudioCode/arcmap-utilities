@@ -1,11 +1,13 @@
 import arcpy, os
 import pandas as pd
 
+# import all classes
 import sys
 sys.path.append("U:/scripts/")
 from classes import *
 
 def SendEdits(gdb):
+    # output two csv files to track duplicate records and deleted records
     mxd = Mxd()
     
     del_csv = "del.csv"
@@ -20,6 +22,7 @@ def SendEdits(gdb):
     base_df = pd.read_csv(base_csv)
 
     def append_edits(record_lyrs, uid):
+        # utility function to compare lists of ids for duplicates and deleted values
         for lyr in record_lyrs:
             with arcpy.da.SearchCursor(fc, [uid, "globalid"]) as cursor:
                 edit_ids = [row[0] for row in cursor]

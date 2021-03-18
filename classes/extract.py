@@ -4,7 +4,9 @@ from arcpy import AddMessage as msg
 from arcpy import AddFieldDelimiters as afd
 
 class Extract:
+    # class to represent and create an extract geodatabase for a given project class object
     def __init__(self, project, default):
+        # initialize the extract class properties
         msg("Creating extract geodatabase...")
         
         self.gdb = self.set_gdb(project)
@@ -71,6 +73,7 @@ class Extract:
         self.report_area = self.check_exists(self.report_area)
     
     def set_gdb(self, project):
+        # copy the template geodatabase to the project folder
         project_fld = os.path.dirname(os.path.dirname(project.gdb))
         output_fld = os.path.join(project_fld, "products")
         if not os.path.exists(output_fld):
@@ -81,14 +84,17 @@ class Extract:
         return gdb
 
     def set_layer(self, name, record):
+        # utility function to create a layer object for a given feature class
         ds = {"resource": self.resource_ds,
               "report": self.report_ds}[record]
         return os.path.join(ds, name)
 
     def set_relation(self, record, name):
+        # utility function to create a path to a relationship class
         return os.path.join(self.gdb, "{0}_{0}{1}".format(record, name))
 
     def append(self, lyrs, uid, table, search_area):
+        # append features to geodatabase feature classes that fall within a given search area
         rec_bool = False
         rec_ids = set()
         rec_table = {"resourceid": self.resources,
@@ -134,8 +140,8 @@ class Extract:
             msg("   No records found".format(os.path.basename(table)))
 
     def check_exists(self, lyr):
+        # utility function to check if layer exists
         if arcpy.Exists(lyr):
             return lyr
         else:
             return None
-        

@@ -7,8 +7,9 @@ from arcpy import AddFieldDelimiters as afd
 from mxd import Mxd
 
 class Batch(Mxd):
-    
+    # class to represent a batch session of an enterprise geodatabase
     def __init__(self, name):
+        # initalize the batch class properties
         Mxd.__init__(self)
 
         self.batch = self.set_table("batch")
@@ -20,11 +21,13 @@ class Batch(Mxd):
         self.gid = self.set_gid()
 
     def set_gid(self):
+        # set the global id for the batch object by querying the batch table
         query = """{0} = '{1}'""".format(afd(self.batch.dataSource, "batchname"), self.name)
         with arcpy.da.SearchCursor(self.batch.dataSource, "globalid", query) as cursor:
             return [row[0] for row in cursor][0]
 
     def add_record(self, record_type, ids):
+        # add a resource or report to the batch
         table = {"resource": self.batch_resource,
                  "report": self.batch_report}[record_type]
         uid = {"resource": "resourceid",
@@ -42,6 +45,7 @@ class Batch(Mxd):
         edit.stopEditing(True)
 
     def add_relate(self, row):
+        # add a resource relationship to the relationship table
         report_id = row["reportid"]
         dup_bool = False
 
@@ -98,6 +102,7 @@ class Batch(Mxd):
 
     
     def delete_gis(self, gids, feat_name):
+        # delete all features associated with the global id
         lyr = {"ResourcePoint": self.resource_point,
                "ResourceLine": self.resource_line,
                "ResourceArea": self.resource_area,
@@ -113,6 +118,3 @@ class Batch(Mxd):
         arcpy.SelectLayerByAttribute_management(lyr, "NEW_SELECTION", expression)
         if int(arcpy.GetCount_management(lyr)[0]) > 0:
             arcpy.DeleteRows_management(lyr)
-        
-            
-        

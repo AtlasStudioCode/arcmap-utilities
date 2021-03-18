@@ -3,15 +3,13 @@ from relate import *
 import arcpy
 import pandas as pd
 
-# parameters
-
+# get parameters from ArcMap geoprocessing window
 report_id = arcpy.GetParameter(0)
 query_path = arcpy.GetParameterAsText(1)
 batch_bool = arcpy.GetParameter(2)
 batch_name = arcpy.GetParameterAsText(3)
 
-# append resource relations
-
+# append resource relations to the batch tables
 prim_df = pd.read_excel(query_path, 0)
 tri_df = pd.read_excel(query_path, 1)
 fs_df = pd.read_excel(query_path, 2)

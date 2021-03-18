@@ -4,17 +4,20 @@ import pandas as pd
 from arcpy import AddFieldDelimiters as afd
 from arcpy import AddMessage as msg
 
+# import all classes
 import sys
 sys.path.append("U:/scripts/")
 from classes import *
 
+# get list of files in input folder
 folder = arcpy.GetParameterAsText(0)
-
 files = [os.path.join(folder, f) for f in os.listdir(folder)]
 
+# create dataframe for unique report id and adequacy
 df = pd.DataFrame({"ureportid": [],
                    "adeq": []})
 
+# get the current adequacy from the input excel files
 for f in files:
     try:
         idf = pd.read_excel(f, 1)
@@ -30,19 +33,18 @@ for f in files:
 
     df = df.append(pd.DataFrame({"ureportid": idf["ureportid"],
                                  "adeq": idf["adeq"]}), ignore_index = True)
-
 id_dict = dict(zip(df["ureportid"], df["adeq"]))
 
+# create a map document object and query the reports for only those with report ids in the above dictionary
 mxd = Mxd()
-
 def_query = """{0} IN ({1})""".format(afd(mxd.reports.dataSource, "reportid"),
                                       ",".join([str(i) for i in df["ureportid"]]))
 mxd.reports.definitionQuery = def_query
 arcpy.RefreshActiveView()
 time.sleep(5)
 
+# update the adequacy field of the reports by their report id
 try:
-
     edit = arcpy.da.Editor(mxd.reports.workspacePath)
 
     edit.startEditing(False, True)

@@ -61,15 +61,13 @@ def find_new_rows(driver):
     return new_row_ids
 
 def get_projects(index, driver):
-    #
+    # get the unique projects within a specified index
     project_lst = []
 
     for i in index:
-
         try:
             project, title = get_fields(i, driver)
             project_lst.append(project)
-
         except Exception as e:
             print(e)
 

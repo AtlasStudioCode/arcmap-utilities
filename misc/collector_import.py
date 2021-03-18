@@ -95,7 +95,6 @@ def append_data(lyr):
     arcpy.Append_management(lyr, out_lyr_path, 'NO_TEST')
 
 try:
-
     # set working env to input database
     arcpy.env.workspace = input_db
 
@@ -129,5 +128,3 @@ try:
 
 except Exception as e:
     arcpy.AddError('   ' + e.message)
-    
-
